@@ -6,7 +6,7 @@ animal_bp = Blueprint ("animal_bp", __name__)
 
 @animal_bp.route ("/animal", methods=["POST"])
 @auth_required
-@verify_permissions(2)
+
 def criar():
     data = request.json
     animal = AnimalService.create_animal(data)

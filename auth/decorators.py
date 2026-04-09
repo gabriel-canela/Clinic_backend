@@ -87,17 +87,18 @@ def verify_permissions(*allowed_roles):
                 return {"erro": "Token invalido"}, 401
             
             if user.user_type not in allowed_roles:
-                return {"erro":"Usuário não autorizado"}
+                return {"erro":"Usuário não autorizado"}, 403
             
             if user.user_type == 2: #Validação do usuário cuja conta tutor está relacionada ao pet em questão
                 tutor = TutorService.get_tutor_by_email(user.email)
-                id_pet = request.args.get('id', type=int)
+                id_pet = kwargs.get("animal_id")
                 pet = AnimalService.get_animal(id_pet)
+                if not pet:
+                    return {"erro":"Pet não encontrado"}, 404
                 if pet:
-                    if int(tutor.id_tutor) == (pet.id_tutor):
+                    if int(tutor.id_tutor) != (pet.id_tutor):
+                        return {"erro":"Tutores podem editar apenas os próprios pets"}, 403
                         
-                        print ("ID TUTOR SERVICE", tutor.id_tutor," DEU BOA ENTROU AQUI")
-                        return {"erro":"Tutores podem editar apenas os próprios pets"}
                # return {"erro":"Pet não encontrado"}
 
             g.current_user = user
